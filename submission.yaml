@@ -11,3 +11,4 @@ serve: /opt/harness/venv/bin/python {src}/serve.py
 env:
   MAX_OUTPUT_TOKENS: "16000"
   COMPACT_AT_TOKENS: "90000"
+  REASONING_EFFORT: "high"
