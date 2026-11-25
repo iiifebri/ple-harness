@@ -1,5 +1,5 @@
-FROM mcr.microsoft.com/devcontainers/universal:2
-# The universal image ships a Yarn APT source whose public key is missing,
-# so apt-get update fails (NO_PUBKEY 62D54F0403F625) when the docker-in-docker
-# feature installs. Add Yarn's public key first so the feature install can run.
-RUN curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+FROM mcr.microsoft.com/devcontainers/python:3.12-bookworm
+# Slim base image: the universal image is too large and its build runs out of
+# disk while extracting its PyTorch layer. The kit only needs Python, git and
+# curl; uv and Harbor are installed by postCreateCommand, Docker comes from
+# the docker-in-docker feature.
