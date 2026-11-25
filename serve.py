@@ -40,6 +40,17 @@ WRAP_UP = {
     "role": "user",
     "content": "Time is almost up. Stop and reply with your summary.",
 }
+DRAFT_FRACTION = 0.5  # ask for a first draft once this share of time is used
+DRAFT = {
+    "role": "user",
+    "content": (
+        "You are past the halfway point of your time limit and no"
+        " deliverable file exists yet. Stop reading and write a complete"
+        " draft of every deliverable now (including submission.zip), then"
+        " keep refining it. A draft on disk is worth far more than a"
+        " perfect plan with no output."
+    ),
+}
 RESULT_CHARS = 20_000  # a longer tool result loses its middle
 # Seconds between retries once the SDK's own quick retries are exhausted.
 RETRY_WAITS = (5, 15, 30, 60, 120)
@@ -71,7 +82,9 @@ client = openai.AsyncOpenAI(max_retries=5, timeout=1800)
 
 SYSTEM = """You are an expert engineer working on a task in a Linux container with no internet access. Your tools \
 act inside it, and bash starts in {workdir}. Read the task and the files it points to before you start. Compute with \
-code, not by hand. Write each deliverable exactly where and in the format the task asks, then open it again to check \
+code, not by hand. Work to a time-boxed plan: write a first complete draft of every deliverable (including \
+submission.zip) within the first 60 minutes, then refine it; never spend more than ~40% of the remaining time only \
+reading. Write each deliverable exactly where and in the format the task asks, then open it again to check \
 it. When you are done, reply without calling a tool: a short summary of each deliverable, where it is, and the key \
 results."""
 
@@ -279,6 +292,41 @@ async def shorten(session, messages):
   return True
 
 
+async def has_deliverable(session, marker):
+  """Returns whether the agent has written any file since the run started.
+
+  Checks the container paths that can hold a deliverable (the task world's
+  `/filesystem` and `/app` trees) for files newer than `marker`, a file
+  touched in the container at the start of the run. When `marker` is None
+  (the touch failed), falls back to looking for any submission.zip under
+  those trees. A failed check reports False so the draft prompt still fires.
+
+  Args:
+    session: Active `taskbridge.Session` for the task.
+    marker: Path of the start-of-run marker file in the container, or None.
+
+  Returns:
+    True when a file written after the run started was found, else False.
+  """
+  if marker is not None:
+    command = (
+        "find /filesystem /app -maxdepth 6 -type f -newer "
+        f"{marker} 2>/dev/null | head -1"
+    )
+  else:
+    command = (
+        "find /filesystem /app -maxdepth 6 -name submission.zip -type f"
+        " 2>/dev/null | head -1"
+    )
+  try:
+    result = await session.exec(command)
+  except taskbridge.Cancelled:
+    raise
+  except Exception:  # pylint: disable=broad-exception-caught
+    return False
+  return bool((result.get("output") or "").strip())
+
+
 async def solve(session):
   """Runs the minimal tool-calling loop on `session` until completion.
 
@@ -294,11 +342,29 @@ async def solve(session):
   ]
   # head: the start of an answer cut off at the output limit
   nudges, head, waits = 0, "", iter(RETRY_WAITS)
+  total = session.time_left()  # the full budget; None when there is no limit
+  marker = "/tmp/.plebench-start-marker"
+  try:
+    await session.exec(f"touch {marker}")
+  except taskbridge.Cancelled:
+    raise
+  except Exception:  # pylint: disable=broad-exception-caught
+    marker = None
+  draft_sent = False
   while True:
     left = session.time_left()  # None when the task has no time limit
     wrap_up = left is not None and left < WRAP_UP_SEC
     if wrap_up and messages[-1:] != [WRAP_UP]:  # asked once, also on a retry
       messages.append(dict(WRAP_UP))
+    if (
+        not draft_sent
+        and total is not None
+        and left is not None
+        and left < total * (1 - DRAFT_FRACTION)
+    ):
+      draft_sent = True
+      if not await has_deliverable(session, marker):
+        messages.append(dict(DRAFT))
     try:  # a call still running when the wrap-up starts is stopped
       reply = await asyncio.wait_for(
           client.chat.completions.create(
