@@ -1,0 +1,13 @@
+# Entry scaffold v1: minimal harness + local-model config (dev only).
+# Local runs use WusRouter codex/gpt-5:free via --model-base-url / --env-file.
+# The FINAL submit must name a sponsored google-cloud/<id> model instead.
+name: ple-harness
+model_api: openai-compatible/codex/gpt-5
+model_base_url: https://wusrouter.com/v1
+install: >-
+  uv venv --python 3.12 /opt/harness/venv
+  && uv pip install --python /opt/harness/venv/bin/python -r {src}/requirements.txt
+serve: /opt/harness/venv/bin/python {src}/serve.py
+env:
+  MAX_OUTPUT_TOKENS: "16000"
+  COMPACT_AT_TOKENS: "90000"
