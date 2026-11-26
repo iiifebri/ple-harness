@@ -1,0 +1,14 @@
+The package is complete. Final summary:
+
+## Deliverable: `/filesystem/final_batch4__structural_task5_wind_diaphragm_shear__blind/output/submission.zip`
+
+Contains exactly the five required files, all machine-validated (headers match the issued templates, no blank cells, all layers/tables present, cost sums internally consistent).
+
+**Engineering basis** (all from the issued documents; superseded Rev‑0 criteria, PC‑S01 2024, A‑101 Rev A, PC‑S02 Rev 1 and the Hall B study excluded):
+- V = 115 mph, Risk Category III (AHJ letter), Kzt = 1.19 (TS‑2026‑02), Ke = 0.8670 from zg = 3941.02 ft (ALTA BM‑2), Kd = 0.85 → **q_h = 28.74 psf** at h = 28 ft; q_p = 29.37 / 30.31 psf at the 31 ft / 36 ft parapets. All reported quantities are **ASD (0.6W)**.
+- **DIAPH-MT 1.0 semi-rigid analysis** implemented per criteria §9 (Q4 membrane, Ghat = 12G′, EAx = 2900 / EAy = 13920 kip/ft, 17400 in Z22; pier springs per §5.5; hat-function line loads; signed torsion M_T = e·B·|F|). **Verified against the published VE‑1 example**: 240/273 elements/nodes, resultant 20.00 k, reactions 10.02/9.98 k, max shear 185.5 plf, chord 2.57 k, δ = 0.1668 in — all inside the §11.3 tolerances.
+- As-built geometry parsed from the 2026 IFC: 63 panels, 74 piers, the field-cut **S14‑O1** opening (its 1.5 ft leg neglected per §5.4), and the **36 ft screen wall N108–N111** (lever action included; these deliver the largest roof-level forces).
+
+**Design result**: 3 deck types (D22‑36/4‑2 typical, D20‑36/9‑4 in Z11, D16‑36/9‑6 in Z33; D22‑36/7‑2 in Z43, with Z22 G′ ×1.15), all PL3x3/8 chords/collectors (max force 12.4 k vs 33.8/20.3 k allowables), 134 E1 embeds, 13 T1 tie-downs. Checks: zone capacities OK (max corner shear 955 plf vs 2294 capacity), max deflection **0.516 in ≤ 0.55**, max pier drift 0.054 ≤ 0.84 in, convergence L2→L3 = 0.17 % ≤ 5 %. **Installed cost $210,930 ≤ $310,000 cap.** One finding reported to the EOR: panel E201's in-plane shear (19.2 k) exceeds its B1 base connection (14.0 k) — infeasible to resolve within the cost cap (a passing deck costs >$350k) and criteria §5.7 places the redesign outside this package; documented in the calculations and design basis.
+
+**Files**: `lateral_schedule.xlsx` (9 sheets, 216-station diaphragm table, 12×6 reactions), `diaphragm_plan.dxf` (all seven S-* layers, TRANSVERSE/W01 and LONGITUDINAL/W03 shear distributions, reactions, zones with deck codes, "ASD (0.6W)" stated), `constraint_register.xlsx` (129 rows, every cited clause string programmatically verified present in its document, zero superseded/foreign citations), `calculations.pdf` (11 portrait sheets covering all §11.1 sections), `design_basis.md` (both §1.6 tables plus nine documented document conflicts).

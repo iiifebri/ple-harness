@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "dev_set": "85ad6d96fbf76ee64d9fb6339b3bf342b07128a2ebadc0a10f008c95dac01a48",
+  "created": "2026-11-25T22:29:11Z",
+  "harness": {
+    "name": "ple-harness",
+    "model_api": "openai-compatible/glm-5.3-flash",
+    "tree": "d5197da0824e3771f9696acb77d920e775d4d9ec539f7799931d8a72c7e68791",
+    "files": {
+      ".devcontainer/Dockerfile": "100644 5606710313b209cdef136e4b08bc640333ad587a",
+      ".devcontainer/devcontainer.json": "100644 70d52b14d8a0185eb3c8fc944dc4fe01f9e1fcab",
+      ".gitignore": "100644 abb474ae125352bdfffe91527c7af187aab26495",
+      "LICENSE": "100644 261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "README.md": "100644 8e83c4c0e1ea427138eddc3b354f1eb7b5ff4b0b",
+      "requirements.txt": "100644 13ba6dbe5a230d71da63dd42ee49e86f580056dc",
+      "serve.py": "100644 846d2a10aac29716e3d0672dfff2609a65d91834",
+      "submission.yaml": "100644 f1aea1c05d8d3a3414515316ed91f31242aa74e7",
+      "taskbridge.py": "100644 26cc3d6cf8dbcaed859731ce9a6881f4ca8bfe40"
+    },
+    "commit": "f93d496ed5ddc717b60f70cc0b20a140ed3ee5d2",
+    "dirty": false
+  },
+  "tasks": {
+    "wind-diaphragm-shear": {
+      "run": "ple-harness-20261125-203812",
+      "trial": "wind-diaphragm-shear__vE5hJ3W",
+      "ended": "ok",
+      "reward": 0.231746,
+      "tree": "d5197da0824e3771f9696acb77d920e775d4d9ec539f7799931d8a72c7e68791",
+      "dev_set": "85ad6d96fbf76ee64d9fb6339b3bf342b07128a2ebadc0a10f008c95dac01a48",
+      "files": {
+        "filesystem/final_batch4__structural_task5_wind_diaphragm_shear__blind/output/submission.zip": "09395937d75e7f0fa0e709cfa76938b85f46025f"
+      },
+      "final_message": "8e09129991b067f4928b76e9828bf65789674361",
+      "deleted": [],
+      "skipped": []
+    }
+  }
+}
